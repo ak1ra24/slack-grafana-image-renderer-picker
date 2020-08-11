@@ -9,7 +9,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
+	"strings"
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/pkcs12"
@@ -27,6 +29,10 @@ type Client struct {
 }
 
 func NewClient(endpoint string, apikey string) *Client {
+	if strings.Contains(apikey, "$") {
+		apikey = strings.TrimLeft(apikey, "$")
+		apikey = os.Getenv(apikey)
+	}
 	return &Client{
 		endpoint: endpoint,
 		apiKey: apikey,
