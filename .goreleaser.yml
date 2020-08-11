@@ -2,17 +2,18 @@ project_name: slack-grafana-image-renderer-picker
 env:
   - GO111MODULE=on
 builds:
-  - main: ./cmd/grasla
-    id: "grasla"
-    binary: grasla
+  - main: ./cmd/gfslack
+    id: "gfslack"
+    binary: gfslack
     ldflags:
       - -s -w
+      - -X main.Version={{.Version}}
     env:
       - CGO_ENABLED=0
 archives:
   - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
     builds:
-      - grasla
+      - gfslack
     replacements:
       darwin: darwin
       linux: linux

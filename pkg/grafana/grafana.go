@@ -13,8 +13,6 @@ import (
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/pkcs12"
-
-	"github.com/LifeMemoryTeam/slack-grafana-image-renderer-picker/pkg/config"
 )
 
 type Graph struct {
@@ -28,15 +26,12 @@ type Client struct {
 	client   *http.Client
 }
 
-func NewClient(endpoint string) *Client {
+func NewClient(endpoint string, apikey string) *Client {
 	return &Client{
 		endpoint: endpoint,
+		apiKey: apikey,
 		client:   &http.Client{},
 	}
-}
-
-func (c *Client) SetAPIKey(apiKey string) {
-	c.apiKey = apiKey
 }
 
 type DsoloParams struct {
@@ -44,6 +39,7 @@ type DsoloParams struct {
 	PanelId string
 	From    string
 	To      string
+	Tz		string
 }
 
 type Request http.Request
@@ -87,6 +83,13 @@ func OrgId(orgid string) Option {
 	}
 }
 
+func Tz(tz string) Option {
+	return func(v *url.Values) *url.Values {
+		v.Add("tz", tz)
+		return v
+	}
+}
+
 func (c *Client) LoadP12(keyPath, password string) error {
 	fb, err := ioutil.ReadFile(keyPath)
 	if err != nil {
@@ -121,24 +124,12 @@ func (c *Client) LoadP12(keyPath, password string) error {
 	return nil
 }
 
-func (c *Client) GetDsolo(name string, opts ...Option) (*Graph, error) {
-	d, err := config.GetDashboard(name)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	o := []Option{OrgId(d.OrgID), PanelId(d.PanelID)}
-	for _, v := range opts {
-		o = append(o, v)
-	}
-	return c.getDsolo(d.DashboardID, d.DashboardName, o...)
-}
-
-func (c *Client) getDsolo(dashboardId, dashboardName string, option ...Option) (*Graph, error) {
+func (c *Client) GetDsolo(dashboardName string, option ...Option) (*Graph, error) {
 	endpoint, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	endpoint.Path = path.Join("/render/d-solo/", dashboardId, "/", dashboardName)
+	endpoint.Path = path.Join("/render/dashboard-solo/db", dashboardName)
 	req := c.NewRequest(endpoint, http.MethodGet)
 	params := req.URL.Query()
 	for _, v := range option {
