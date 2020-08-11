@@ -1,24 +1,17 @@
 slack:
-   token: xoxb-test
-   secret: 6e50
-   addr: ":8080"
+    token: "xoxb-test"
+    channel: "#test"
 grafana:
-   endpoint: "http://localhost:3000/"
-   use_client_auth: true
-   client_auth_p12: "/ssl/key.p12"
+    endpoint: "http://localhost:3000"
+    apikey: "grafana-apikey"
+    use_client_auth: true
+    client_auth_p12: "/ssl/key.p12"
 dashboards:
-   -  name: disk
-      dashboardId: "000000012"
-      dashboardName: alerts-linux-nodes
-      orgId: 1
-      panelId: 1
    -  name: cpu
-      dashboardId: "000000012"
       dashboardName: alerts-linux-nodes
       orgId: 1
-      panelId: 4
-   -  name: memory
-      dashboardId: "000000012"
+      panelId: 2
+   -  name: disk
       dashboardName: alerts-linux-nodes
       orgId: 1
-      panelId: 5
+      panelId: 3
