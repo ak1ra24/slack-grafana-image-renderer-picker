@@ -1,8 +1,6 @@
 ## Slack Grafana Image Renderer Picker
 
-Pick graph with Slack Slash Command from Grafana Image Renderer and post graph image to Slack.
-
-![](https://lifememoryteam.github.io/slack-grafana-image-renderer-picker/grasla.gif)
+Pick graph with cli tool from Grafana Image Renderer and post graph image to Slack.
 
 ### Dependencies
 
@@ -14,10 +12,8 @@ Pick graph with Slack Slash Command from Grafana Image Renderer and post graph i
 
 ### Deployment
 
-Please read [docker-compose.yml](https://github.com/lifememoryteam/slack-grafana-image-renderer-picker/blob/master/docker-compose.yml)
-
-- Docker image from [Packages](https://github.com/lifememoryteam/slack-grafana-image-renderer-picker/packages)
-- Get binary from [Releases](https://github.com/lifememoryteam/slack-grafana-image-renderer-picker/releases)
+- Docker image from [Packages](https://github.com/ak1ra24/slack-grafana-image-renderer-picker/packages) [DockerHub](https://hub.docker.com/r/akiranet24/gfslack)
+- Get binary from [Releases](https://github.com/ak1ra24/slack-grafana-image-renderer-picker/releases)
 
 
 ### Configuration
@@ -26,45 +22,58 @@ Please read [docker-compose.yml](https://github.com/lifememoryteam/slack-grafana
 
 You need register an Slack Application for Slash Command and files:write permission token.
 
-Slash command can be configured as follows:
+cli can be configured as follows:
 
 ```text
-Command: /graph
-Request URL: https://your_server_host/slash
-Short Description: Get Grafana Panel by alias
-Usage Hint: [cpu|memory|disk] \d+[m|h|d|M]
+❯ ./gfslack -h
+NAME:
+   gfslack - upload grafana graph image to slack
+
+USAGE:
+   gfslack [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.1
+
+AUTHOR:
+   ak1ra24 <ak1ra24net@gmail.com>
+
+COMMANDS:
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --config value, -c value  Specify the Config file. (default: "config.yaml")
+   --name value              Specify the dashboard name.
+   --time value, -d value    Specify from time e.g.) 1h
+   --tz value                Specify timezone (default: "JST")
+   --help, -h                show help (default: false)
+   --version, -v             print the version (default: false)
+
 ```
 
 Configuration file be specified as follows:
 
 ```yaml
 slack:
-   token: xoxb-test # Slack Token (needs files:write permission)
-   secret: 6e50     # Slack Verification Token
-   addr: ":8080"    # Slash Command Server Listen Address
+    token: "xoxb-test"
+    channel: "#test"
 grafana:
-   endpoint: "http://localhost:3000/" # Grafana Endpoint
-   use_client_auth: true              # Enable Client Authentication for Auth Proxy
-   client_auth_p12: "/ssl/key.p12"    # Certificate file (P12)
+    endpoint: "http://localhost:3000"
+    apikey: "grafana-apikey"
+    use_client_auth: true
+    client_auth_p12: "/ssl/key.p12"
 dashboards:
-   -  name: disk                          # Graph Alias (string)
-      dashboardId: "000000012"            # Graph Dashboard ID
-      dashboardName: alerts-linux-nodes   # Graph Dashboard Name
-      orgId: 1                            # Graph Org ID
-      panelId: 1                          # Graph Panel ID
    -  name: cpu
-      dashboardId: "000000012"
       dashboardName: alerts-linux-nodes
       orgId: 1
-      panelId: 4
-   -  name: memory
-      dashboardId: "000000012"
+      panelId: 2
+   -  name: disk
       dashboardName: alerts-linux-nodes
       orgId: 1
-      panelId: 5
+      panelId: 3
 ```
 
-`dashboards` specify a graph panel to be upload with Slack slash command. You can get the parameters of the graph panel by selecting the panel in Grafana and clicking on the share button.
+`dashboards` specify a graph panel to be upload with cli. You can get the parameters of the graph panel by selecting the panel in Grafana and clicking on the share button.
 
 `name` specifies the alias of a graph. So you can get a graph in Slack like `/graph cpu`.
 
@@ -80,6 +89,8 @@ Run with environment: `CONFIG_FILE=config.yaml GRAFANA_API_KEY=apikey`
 
 ### Usage
 
-Invoke with `/graph <alias> (<from_time_range>)` (No `<from_time_range>` with default time range)
+```
+gfslack -c config.yaml --name cpu -d 1h
+```
 
 Example `<from_time_range>`: `15m` `3h` `1d` `1M`
