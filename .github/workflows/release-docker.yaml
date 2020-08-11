@@ -13,11 +13,9 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Push to Docker Hub
-        run: |
-            IMAGE_TAG=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
-            docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
-            docker build -t akiranet24/gfslack:$IMAGE_TAG .
-            docker push akiranet24/gfslack:$IMAGE_TAG
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: akiranet24/gfslack
+          tag_with_ref: true
