@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: akiranet24/gfslack
           tag_with_ref: true
-	  - name: Push to GitHub Packages
+      - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
         with:
           username: ${{ github.actor }}
