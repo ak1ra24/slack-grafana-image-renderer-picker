@@ -19,3 +19,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: akiranet24/gfslack
           tag_with_ref: true
+	  - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ak1ra24/slack-grafana-image-renderer-picker/gfslack
+          tag_with_ref: true
